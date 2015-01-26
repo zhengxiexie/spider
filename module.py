@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 # 关于订阅的相关的接口
-from header import *
-from threading import Lock
+from threading import Lock, Thread
+import threading
+import time
+import random
+from tools import *
+from Queue import Queue
 
 
 class Item():
@@ -21,7 +25,7 @@ class UrlQueue():
 
 	def push(self, item):
 		"""线程安全"""
-		print 'push item'
+		print 'push item', item.url, item.deep
 		self.queue.put(item)
 		self.todo += 1
 
@@ -47,6 +51,7 @@ class ParseUrlThread(Thread):
 			print 'thread %s consumed' % threading.current_thread().name, item.url
 			if item.deep > 3:
 				break
+			print item.url
 			url_list = parse(item.url)
 			for url in url_list:
 				item = Item(url, item.deep+1)

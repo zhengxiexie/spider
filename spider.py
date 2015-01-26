@@ -1,13 +1,8 @@
-from header import *
 from module import *
 from tools import *
-from macro import *
-from threading import Lock
 
-url_queue = UrlQueue()
-sheet_lock = Lock()
 
-item = Item("www.youku.com", 0)
+item = Item("http://www.youku.com", 0)
 
 url_queue.push(item)
 
