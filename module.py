@@ -3,7 +3,9 @@ from threading import Lock, Thread
 import threading
 import time
 import random
+import sqlite3
 from Queue import Queue
+from tools import *
 
 class Item():
 	"""deep记录每个url到第几层了"""
@@ -50,7 +52,6 @@ class UrlQueue():
 class ParseUrlThread(Thread):
 	"""线程既是生产者，也是消费者"""
 	def __init__(self):
-		from tools import Argument
 		super(ParseUrlThread, self).__init__()
 		global Argument
 		self.connector = sqlite3.connect(Argument['dbfile']) # 每个线程自己独立的数据库链接
@@ -73,5 +74,3 @@ class ParseUrlThread(Thread):
 				item_new = Item(url, item.deep+1)
 				url_queue.push(item_new)
 		return
-
-

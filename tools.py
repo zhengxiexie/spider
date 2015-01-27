@@ -7,6 +7,8 @@ import sqlite3
 from module import *
 from threading import Lock, Thread
 
+Argument = {}
+
 def get_data(url):
 	"""抓取网页"""
 	html = ''
@@ -102,12 +104,11 @@ def init_context():
 	Argument["logging"] = logging
 
 	# 生成消息队列
-	from module import UrlQueue
+	from module import *
 	url_queue = UrlQueue()
 	Argument['url_queue'] = url_queue
 
 	# 将第一个url入队列
 	item = Item(Argument['url'], 0)
 	url_queue.push(item)
-
-	print Argument
+	return Argument
