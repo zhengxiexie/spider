@@ -3,21 +3,23 @@ import re
 import urllib2
 import getopt, sys
 
-def get_data(url):
+def get_data(url, log):
 	"""抓取网页"""
 	html = ''
-	opener = urllib2.build_opener()
+	log.debug(html)
 	try:
-		response = opener.open(url)
+		response = urllib2.urlopen(url, timeout=20)
 		html = response.read()
-		return html
 	except:
 		return html
+	log.debug(html)
+	return html
 
-def parse(table, url, key):
+def parse(table, url, key, log):
 	"""解析当前页面的所有url, 如果符合key的页面，则入库"""
 	url_list = []
-	data = get_data(url)
+	data = get_data(url, log)
+	log.debug(data)
 	if key in data:
 		table.insert_page(data)
 	res_iter = re.finditer(r'href="(http.*?)"', data, re.S)

@@ -26,16 +26,19 @@ class UrlQueue():
 			self.queue.put(item)
 			self.sheet_url.add(item.url)
 			self.pushed += 1
+			self.logs.debug('pushed:%s', self.pushed)
 		self.sheet_lock.release()
 
 	def pop(self):
 		"""将项目弹出队列，线程安全"""
 		try:
-			item = self.queue.get(block=True, timeout=30) # 如果30秒内没有新的url，则退出线程
+			item = self.queue.get(block=True, timeout=5) # 如果5秒内没有新的url，则退出线程
+			self.sheet_lock.acquire()
+			self.poped += 1
+			self.logs.debug('poped:%s', self.poped)
+			self.sheet_lock.release()
+			self.logs.info('consumed[%s] deep[%s]', item.url, item.deep)
 		except:
 			return None
-		self.logs.info('consumed[%s] deep[%s]', item.url, item.deep)
-		self.sheet_lock.acquire()
-		self.poped += 1
-		self.sheet_lock.release()
+		self.logs.debug(item.url)
 		return item

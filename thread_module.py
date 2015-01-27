@@ -24,7 +24,8 @@ class ParseUrlThread(Thread):
 				break
 			if item.deep > self.deep: # 如果url深度超过某值，则不入队列
 				continue
-			url_list = parse(table, item.url, self.key)
+			self.logs.debug(self.key)
+			url_list = parse(table, item.url, self.key, self.logs)
 			for url in url_list:
 				item_new = Item(url, item.deep+1)
 				self.url_queue.push(item_new)
@@ -37,14 +38,16 @@ class ProgressThread(Thread):
 		self.url_queue = url_queue
 
 	def run(self):
+		count = 0 # 如果pushed=poped，则循环再检查10次，以防进度还没显示100%，就退出
 		while True:
+			if count > 10:
+				break
 			pushed = float(self.url_queue.pushed)
 			poped = float(self.url_queue.poped)
 			info = 'pushed:%s poped:%s' % (self.url_queue.pushed, self.url_queue.poped)
-			sys.stdout.write(str(int((pushed/(poped))*100))+'% ||'+'->'+info+"\r")
+			sys.stdout.write(str(int((poped/(pushed)*100)))+'% ||'+'->'+info+"\r")
 			sys.stdout.flush()
 			time.sleep(0.5)
 			if self.url_queue.pushed == self.url_queue.poped:
-				time.sleep(4)
-				break
+				count += 1
 		return
