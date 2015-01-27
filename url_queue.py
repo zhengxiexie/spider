@@ -31,7 +31,7 @@ class UrlQueue():
 	def pop(self):
 		"""将项目弹出队列，线程安全"""
 		try:
-			item = self.queue.get(block=True, timeout=10) # 如果30秒内没有新的url，则退出线程
+			item = self.queue.get(block=True, timeout=30) # 如果30秒内没有新的url，则退出线程
 		except:
 			return None
 		self.logs.info('consumed[%s] deep[%s]', item.url, item.deep)

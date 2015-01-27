@@ -24,6 +24,7 @@ class ParseUrlThread(Thread):
 				break
 			if item.deep > self.deep: # 如果url深度超过某值，则不入队列
 				continue
+			print item.url
 			url_list = parse(table, item.url, self.key)
 			for url in url_list:
 				item_new = Item(url, item.deep+1)
@@ -44,7 +45,7 @@ class ProgressThread(Thread):
 			sys.stdout.write(str(int((pushed/(poped))*100))+'% ||'+'->'+info+"\r")
 			sys.stdout.flush()
 			time.sleep(0.5)
-			#if self.url_queue.todo == self.url_queue.done:
-				#time.sleep(ikk1)
-				#break
+			if self.url_queue.pushed == self.url_queue.poped:
+				time.sleep(4)
+				break
 		return
