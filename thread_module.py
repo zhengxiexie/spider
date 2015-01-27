@@ -24,7 +24,6 @@ class ParseUrlThread(Thread):
 				break
 			if item.deep > self.deep: # 如果url深度超过某值，则不入队列
 				continue
-			print item.url
 			url_list = parse(table, item.url, self.key)
 			for url in url_list:
 				item_new = Item(url, item.deep+1)

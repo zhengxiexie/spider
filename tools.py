@@ -9,7 +9,6 @@ def get_data(url):
 	opener = urllib2.build_opener()
 	try:
 		response = opener.open(url)
-		print response
 		html = response.read()
 		return html
 	except:
@@ -25,7 +24,6 @@ def parse(table, url, key):
 	for i in res_iter:
 		url = i.group(1)
 		url_list.append(url)
-	print url_list
 	return url_list
 
 def usage():

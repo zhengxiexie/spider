@@ -38,3 +38,4 @@ class UrlQueue():
 		self.sheet_lock.acquire()
 		self.poped += 1
 		self.sheet_lock.release()
+		return item

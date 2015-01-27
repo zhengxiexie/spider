@@ -39,9 +39,9 @@ def main():
 		t.start()
 
 	# 打印线程
-	#p = ProgressThread(url_queue)
-	#threads.append(p)
-	#p.start()
+	p = ProgressThread(url_queue)
+	threads.append(p)
+	p.start()
 
 	for t in threads:
 		t.join()
