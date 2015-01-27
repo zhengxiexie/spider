@@ -22,7 +22,7 @@ class ParseUrlThread(Thread):
 			if not item: # 如果在一定时间内消费完，则退出
 				self.logs.info('All consumed, finished')
 				break
-			if item.deep > self.deep:
+			if item.deep > self.deep: # 如果url深度超过某值，则不入队列
 				continue
 			url_list = parse(table, item.url, self.key)
 			for url in url_list:
@@ -38,8 +38,13 @@ class ProgressThread(Thread):
 
 	def run(self):
 		while True:
-			time.sleep(1)
-			print 'todo:%s done:%s\n' % (self.url_queue.todo, self.url_queue.done)
-			if self.url_queue.todo == self.url_queue.done:
-				break
+			pushed = float(self.url_queue.pushed)
+			poped = float(self.url_queue.poped)
+			info = 'pushed:%s poped:%s' % (self.url_queue.pushed, self.url_queue.poped)
+			sys.stdout.write(str(int((pushed/(poped))*100))+'% ||'+'->'+info+"\r")
+			sys.stdout.flush()
+			time.sleep(0.5)
+			#if self.url_queue.todo == self.url_queue.done:
+				#time.sleep(ikk1)
+				#break
 		return

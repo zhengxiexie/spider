@@ -32,5 +32,5 @@ class Table():
 		with closing(self.connector.cursor()) as cursor:
 			cursor.execute("select count(*) from page")
 			res = cursor.fetchone()
-			logs.info("Total count [%s]", res[0])
+			self.logs.info("Total count [%s]", res[0])
 
