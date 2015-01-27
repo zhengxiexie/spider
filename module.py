@@ -53,15 +53,13 @@ class ParseUrlThread(Thread):
 	"""线程既是生产者，也是消费者"""
 	def __init__(self):
 		super(ParseUrlThread, self).__init__()
-		global Argument
-		self.connector = sqlite3.connect(Argument['dbfile']) # 每个线程自己独立的数据库链接
 		self.url_queue = Argument['url_queue']
 		self.logs = Argument['logging']
 
-	def __del__(self):
-		self.connector.close()
-
 	def run(self):
+		global Argument
+		self.connector = sqlite3.connect(Argument['dbfile']) # 每个线程自己独立的数据库链接
+		self.logs.info("Created connection to sqlite3:%s", self.connector)
 		while True:
 			item = self.url_queue.pop()
 			if not item: # 如果在一定时间内消费完，则退出
@@ -72,5 +70,6 @@ class ParseUrlThread(Thread):
 			url_list = parse(item.url, self.connector)
 			for url in url_list:
 				item_new = Item(url, item.deep+1)
-				url_queue.push(item_new)
+				self.url_queue.push(item_new)
+		self.connector.close()
 		return

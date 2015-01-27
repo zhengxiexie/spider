@@ -21,8 +21,10 @@ def get_data(url):
 		return html
 
 def insert_page(data, connector):
+	connector.text_factory = str
+	values = (data,)
 	cursor = connector.cursor()
-	cursor.execute("insert into page(content) values(?)", data)
+	cursor.execute("insert into page(content) values(?)", values)
 	connector.commit()
 	cursor.close()
 
@@ -99,7 +101,7 @@ def init_context():
 	level_map = {'1':logging.CRITICAL, '2':logging.ERROR, '3':logging.WARNING, '4':logging.INFO,
 			'5':logging.DEBUG}
 	logging.basicConfig(level = level_map[Argument['loglevel']],
-						format = "[%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(thead)d] %(message)s",
+						format = "[%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(thread)d] %(message)s",
 						datefmt="%H:%M:%S", filename=Argument['logfile'])
 	Argument["logging"] = logging
 
