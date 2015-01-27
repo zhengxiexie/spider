@@ -10,7 +10,7 @@ def get_data(url, log):
 	try:
 		response = urllib2.urlopen(url, timeout=1)
 		header = response.info().getheader('Content-Type')
-		if 'text/html' in header:
+		if 'text/html' in header: #只下载文本内容
 			html = response.read()
 	except:
 		return html
