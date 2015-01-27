@@ -1,61 +1,77 @@
-#!/usr/bin/env python
 #-*- coding: utf-8 -*-
-# 关于订阅的相关的接口
 from threading import Lock, Thread
 import threading
 import time
 import random
-from tools import *
 from Queue import Queue
-
 
 class Item():
 	"""deep记录每个url到第几层了"""
 	def __init__(self, url, deep):
 		self.url = url
-		self.deep = deep + 1
+		self.deep = deep
 
 class UrlQueue():
 	"""放待处理的url的队列，todo
 	表示还剩多少没处理，done表示已经处理完的"""
 	def __init__(self):
+		from tools import Argument
+		global Argument
+		self.sheet_lock = Argument['sheet_lock']
+		self.sheet_url = Argument['sheet_url']
+		self.logs = Argument['logging']
 		self.queue = Queue()
 		self.done = 0
 		self.todo = 0
 
 	def push(self, item):
-		"""线程安全"""
-		print 'push item', item.url, item.deep
-		self.queue.put(item)
+		"""将项目放入队列，线程安全"""
+		self.sheet_lock.acquire()
+		if item.url not in self.sheet_url:
+			self.logs.info('pushed[%s] deep[%s]', item.url, item.deep)
+			self.queue.put(item)
+			self.sheet_url.add(item.url)
 		self.todo += 1
+		self.sheet_lock.release()
 
 	def pop(self):
-		"""线程安全"""
-		item = self.queue.get()
-		self.queue.task_done()
+		"""将项目弹出队列，线程安全"""
+		try:
+			item = self.queue.get(block=True, timeout=30) # 如果60秒内没有新的url，则退出线程
+		except:
+			return None
+		self.logs.info('consumed[%s] deep[%s]', item.url, item.deep)
+		self.sheet_lock.acquire()
 		self.done += 1
+		self.sheet_lock.release()
 		return item
 
-url_queue = UrlQueue()
-sheet_lock = Lock()
 
 class ParseUrlThread(Thread):
+	"""线程既是生产者，也是消费者"""
 	def __init__(self):
+		from tools import Argument
 		super(ParseUrlThread, self).__init__()
+		global Argument
+		self.connector = sqlite3.connect(Argument['dbfile']) # 每个线程自己独立的数据库链接
+		self.url_queue = Argument['url_queue']
+		self.logs = Argument['logging']
+
+	def __del__(self):
+		self.connector.close()
 
 	def run(self):
-		global url_queue
-		nums = range(5)
 		while True:
-			item = url_queue.pop()
-			print 'thread %s consumed' % threading.current_thread().name, item.url
-			if item.deep > 3:
+			item = self.url_queue.pop()
+			if not item: # 如果在一定时间内消费完，则退出
+				self.logs.info('All consumed, finished')
 				break
-			print item.url
-			url_list = parse(item.url)
+			if item.deep > 2:
+				continue
+			url_list = parse(item.url, self.connector)
 			for url in url_list:
-				item = Item(url, item.deep+1)
-				url_queue.push(item)
-				print 'thread %s pushed' % threading.current_thread().name, url
-			time.sleep(random.random())
+				item_new = Item(url, item.deep+1)
+				url_queue.push(item_new)
 		return
+
+

@@ -1,16 +1,30 @@
+#-*- coding: utf-8 -*-
 from module import *
 from tools import *
 
+def main():
+	"""主程序"""
+	global Argument
+	Argument = {}
 
-item = Item("http://www.youku.com", 0)
+	# 初始化环境
+	init_context()
 
-url_queue.push(item)
+	print Argument
 
-threads = []
-for i in range(5):
-	t = ParseUrlThread()
-	threads.append(t)
-	t.start()
+	logs = Argument["logging"]
+	logs.info("Parsed arguments: %s", str(Argument))
 
-for t in threads:
-	t.join()
+	threads = []
+	for i in range(Argument['thread']):
+		t = ParseUrlThread()
+		threads.append(t)
+		t.start()
+
+	for t in threads:
+		t.join()
+
+	query_page()
+
+if __name__ == "__main__":
+	main()
