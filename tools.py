@@ -27,12 +27,12 @@ def insert_page(data, connector):
 	connector.text_factory = str
 	values = (data,)
 	cursor = connector.cursor()
-	#try:
-		#cursor.execute("insert into page(content) values(?)", values)
-	#except:
-		#logs.error("Insert error")
-	cursor.execute("insert into page(content) values(?)", values)
-	connector.commit()
+	try:
+		cursor.execute("insert into page(content) values(?)", values)
+		connector.commit()
+		logs.info("Insert one row")
+	except:
+		logs.error("Insert error")
 	cursor.close()
 
 def query_page():
@@ -43,7 +43,7 @@ def query_page():
 	cu.execute("select count(*) from page")
 	res = cu.fetchall()
 	logs = Argument['logging']
-	logs.info("Total count [%s]", res[0])
+	logs.info("Total count [%s]", res[0][0])
 	cu.close()
 	connector.close()
 
@@ -55,12 +55,12 @@ def create_page():
 	cu = connector.cursor()
 	try:
 		cu.execute("create table if not exists page (id integer primary key AutoIncrement, content text)")
+		connector.commit()
+		logs.info("Create table succed")
 	except:
 		logs.error("Create table error")
-	connector.commit()
 	cu.close()
 	connector.close()
-	logs.info("Created table")
 
 
 def parse(url, connector):

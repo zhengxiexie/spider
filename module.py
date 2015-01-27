@@ -65,7 +65,7 @@ class ParseUrlThread(Thread):
 			if not item: # 如果在一定时间内消费完，则退出
 				self.logs.info('All consumed, finished')
 				break
-			if item.deep > 2:
+			if item.deep > int(Argument['deep']):
 				continue
 			url_list = parse(item.url, self.connector)
 			for url in url_list:
