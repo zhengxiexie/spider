@@ -21,11 +21,16 @@ def get_data(url):
 		return html
 
 def insert_page(data, connector):
+	"""插入条目"""
+	global Argument
+	logs = Argument['logging']
 	connector.text_factory = str
 	values = (data,)
 	cursor = connector.cursor()
-	cursor.execute("insert into page(content) values(?)", values)
-	connector.commit()
+	try:
+		cursor.execute("insert into page(content) values(?)", values)
+	except:
+		logs.error("Insert error")
 	cursor.close()
 
 def query_page():
@@ -36,7 +41,25 @@ def query_page():
 	cu.execute("select count(*) from page")
 	res = cu.fetchall()
 	logs = Argument['logging']
-	logs.info("Total count [%s]", res)
+	logs.info("Total count [%s]", res[0])
+	cu.close()
+	connector.close()
+
+def create_page():
+	"""建表"""
+	global Argument
+	logs = Argument['logging']
+	connector = sqlite3.connect(Argument['dbfile'])
+	cu = connector.cursor()
+	try:
+		cu.execute("create table if not exists page (id integer primary key AutoIncrement, content text)")
+	except:
+		logs.error("Create table error")
+	connector.commit()
+	cu.close()
+	connector.close()
+	logs.info("Created table")
+
 
 def parse(url, connector):
 	"""解析当前页面的所有url, 如果符合key的页面，则入库"""
@@ -105,8 +128,12 @@ def init_context():
 						datefmt="%H:%M:%S", filename=Argument['logfile'])
 	Argument["logging"] = logging
 
+	# 建表
+	create_page()
+
 	# 生成消息队列
-	from module import *
+	from module import UrlQueue
+	from module import Item
 	url_queue = UrlQueue()
 	Argument['url_queue'] = url_queue
 
