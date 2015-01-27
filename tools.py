@@ -8,8 +8,10 @@ def get_data(url, log):
 	html = ''
 	log.debug(html)
 	try:
-		response = urllib2.urlopen(url, timeout=20)
-		html = response.read()
+		response = urllib2.urlopen(url, timeout=1)
+		header = response.info().getheader('Content-Type')
+		if 'text/html' in header:
+			html = response.read()
 	except:
 		return html
 	log.debug(html)

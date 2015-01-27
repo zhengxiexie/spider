@@ -20,6 +20,7 @@ class UrlQueue():
 
 	def push(self, item):
 		"""将项目放入队列，线程安全"""
+		self.logs.info('waiting')
 		self.sheet_lock.acquire()
 		if item.url not in self.sheet_url:
 			self.logs.info('pushed[%s] deep[%s]', item.url, item.deep)
@@ -33,6 +34,7 @@ class UrlQueue():
 		"""将项目弹出队列，线程安全"""
 		try:
 			item = self.queue.get(block=True, timeout=5) # 如果5秒内没有新的url，则退出线程
+			self.logs.info('waiting')
 			self.sheet_lock.acquire()
 			self.poped += 1
 			self.logs.debug('poped:%s', self.poped)
