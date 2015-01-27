@@ -49,7 +49,7 @@ class ProgressThread(Thread):
 			percent = int((poped/pushed) * 100)
 			sys.stdout.write(str(percent)+'% ||'+'->'+info+"\r")
 			sys.stdout.flush()
-			time.sleep(10)
+			time.sleep(0.1)
 			if self.url_queue.pushed == self.url_queue.poped:
 				count += 1
 		return
