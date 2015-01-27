@@ -44,7 +44,7 @@ class ProgressThread(Thread):
 				break
 			pushed = float(self.url_queue.pushed)
 			poped = float(self.url_queue.poped)
-			info = 'pushed:%s poped:%s' % (self.url_queue.pushed, self.url_queue.poped)
+			info = 'pushed:%s poped:%s' % (pushed, poped)
 			sys.stdout.write(str(int((poped/(pushed)*100)))+'% ||'+'->'+info+"\r")
 			sys.stdout.flush()
 			time.sleep(0.5)
