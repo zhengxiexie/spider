@@ -27,10 +27,12 @@ def insert_page(data, connector):
 	connector.text_factory = str
 	values = (data,)
 	cursor = connector.cursor()
-	try:
-		cursor.execute("insert into page(content) values(?)", values)
-	except:
-		logs.error("Insert error")
+	#try:
+		#cursor.execute("insert into page(content) values(?)", values)
+	#except:
+		#logs.error("Insert error")
+	cursor.execute("insert into page(content) values(?)", values)
+	connector.commit()
 	cursor.close()
 
 def query_page():
