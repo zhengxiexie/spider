@@ -39,6 +39,7 @@ class ProgressThread(Thread):
 
 	def run(self):
 		count = 0 # 如果pushed=poped，则循环再检查10次，以防进度还没显示100%，就退出
+		time.sleep(5) # 防止开始进度显示100%
 		while True:
 			if count > 10:
 				break
