@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
 from threading import Lock
 from thread_module import *
 from url_queue import *
 from table import *
-import logging
 
 
 def main():
+
     argument = get_opt()  # 解析命令行参数
     if not argument:
         return
@@ -33,11 +34,11 @@ def main():
             format=log_format,datefmt=date_format,filename=log_name)
 
     # 建表
-    table = Table(argument['dbfile'], logging)
+    table = Table(argument['dbfile'])
     table.create_page()
 
     # 生成消息队列
-    url_queue = UrlQueue(sheet_lock, sheet_url, logging)
+    url_queue = UrlQueue(sheet_lock, sheet_url)
 
     # 将第一个url入队列
     item = Item(argument['url'], 0)
@@ -47,7 +48,7 @@ def main():
 
     # 消费者线程
     for i in range(int(argument['thread'])):
-        t = ParseUrlThread(url_queue, logging, argument['dbfile'],
+        t = ParseUrlThread(url_queue, argument['dbfile'],
                            int(argument['deep']), argument['key'])
         threads.append(t)
         t.start()

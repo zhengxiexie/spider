@@ -2,12 +2,13 @@
 import re
 import urllib2
 import getopt, sys
+import logging
 
 
-def get_data(url, log):
+def get_data(url):
     """抓取网页"""
     html = ''
-    log.debug(html)
+    logging.debug(html)
     try:
         response = urllib2.urlopen(url, timeout=1)
         header = response.info().getheader('Content-Type')
@@ -15,15 +16,15 @@ def get_data(url, log):
             html = response.read()
     except:
         return html
-    log.debug(html)
+    logging.debug(html)
     return html
 
 
-def parse(table, url, key, log):
+def parse(table, url, key):
     """解析当前页面的所有url, 如果符合key的页面，则入库"""
     url_list = []
-    data = get_data(url, log)
-    log.debug(data)
+    data = get_data(url)
+    logging.debug(data)
     if key in data:
         table.insert_page(data)
     res_iter = re.finditer(r'href="(http.*?)"', data, re.S)

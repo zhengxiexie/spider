@@ -1,31 +1,31 @@
 # -*- coding: utf-8 -*-
+import time
+import logging
 from threading import Thread
 from url_queue import Item
 from tools import *
 from table import *
-import time
 
 
 class ParseUrlThread(Thread):
     """线程既是生产者，也是消费者"""
 
-    def __init__(self, url_queue, logging, dbpath, deep, key):
+    def __init__(self, url_queue, dbpath, deep, key):
         super(ParseUrlThread, self).__init__()
         self.url_queue = url_queue
-        self.logs = logging
         self.dbpath = dbpath
         self.deep = deep
         self.key = key
 
     def run(self):
-        table = Table(self.dbpath, self.logs)
+        table = Table(self.dbpath)
         while True:
             item = self.url_queue.pop()
             if not item:  # 如果在一定时间内消费完，则退出
-                self.logs.info('All consumed, finished')
+                logging.info('All consumed, finished')
                 break
-            self.logs.debug(self.key)
-            url_list = parse(table, item.url, self.key, self.logs)
+            logging.debug(self.key)
+            url_list = parse(table, item.url, self.key)
             for url in url_list:
                 if item.deep > self.deep:  # 如果url深度超过某值，则不入队列
                     continue
@@ -43,7 +43,7 @@ class ProgressThread(Thread):
 
     def run(self):
         count = 0  # 如果pushed=popped，则循环再检查10次，以防进度还没显示100%，就退出
-        time.sleep(10)  # 防止开始进度显示100%
+        time.sleep(5)  # 防止开始进度显示100%
         while True:
             if count > 10:
                 break
