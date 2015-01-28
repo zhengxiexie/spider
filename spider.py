@@ -14,11 +14,25 @@ def main():
 	sheet_url = set([]) # 已经解析的名单, 防止重复解析
 
 	# 设置日志信息
-	level_map = {'1':logging.CRITICAL, '2':logging.ERROR, '3':logging.WARNING, '4':logging.INFO,
-			'5':logging.DEBUG}
-	logging.basicConfig(level = level_map[argument['loglevel']],
-						format = "[%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(thread)d] %(message)s",
-						datefmt="%H:%M:%S", filename=argument['logfile'])
+	level_map = {
+				 '1':logging.CRITICAL,
+				 '2':logging.ERROR,
+			     '3':logging.WARNING,
+				 '4':logging.INFO,
+				 '5':logging.DEBUG
+				}
+
+	date_format = "%H:%M:%S"
+	log_name    = argument['logfile']
+	log_level   = level_map[argument['loglevel']]
+	log_format  = "[%(asctime)s %(levelname)s %(filename)s:"\
+					"%(lineno)d %(thread)d] %(message)s"
+
+	logging.basicConfig( level=log_level,
+						 format=log_format,
+						 datefmt=date_format,
+						 filename=log_name)
+
 	# 建表
 	table = Table(argument['dbfile'], logging)
 	table.create_page()
@@ -34,7 +48,8 @@ def main():
 
 	# 消费者线程
 	for i in range(int(argument['thread'])):
-		t = ParseUrlThread(url_queue, logging, argument['dbfile'], int(argument['deep']), argument['key'])
+		t = ParseUrlThread(url_queue, logging, argument['dbfile'],
+						   int(argument['deep']), argument['key'])
 		threads.append(t)
 		t.start()
 
