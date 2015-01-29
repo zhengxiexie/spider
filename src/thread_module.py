@@ -57,8 +57,8 @@ class DBThread(Thread):
                 return
             try:
                 data = self.data_queue.get(block=True, timeout=5)
-                data_none = True
             except:
+                data_none = True
                 continue
             self.table.insert_page(data)
         return
