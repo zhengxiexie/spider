@@ -50,12 +50,14 @@ class DBThread(Thread):
 
     def run(self):
         self.table = Table(self.dbpath)
+        data_none = False  # 数据队列为空时才退出
         while True:
-            if self.stopped():
+            if self.stopped() and data_none:
                 del self.table
                 return
             try:
                 data = self.data_queue.get(block=True, timeout=5)
+                data_none = True
             except:
                 continue
             self.table.insert_page(data)
