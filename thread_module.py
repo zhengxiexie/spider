@@ -10,12 +10,12 @@ from table import *
 class ParseUrlThread(Thread):
     """线程既是生产者，也是消费者"""
 
-    def __init__(self, url_queue, dbpath, deep, key):
+    def __init__(self, url_queue, argument):
         super(ParseUrlThread, self).__init__()
         self.url_queue = url_queue
-        self.dbpath = dbpath
-        self.deep = deep
-        self.key = key
+        self.dbpath = argument['dbfile']
+        self.deep = int(argument['deep'])
+        self.key = argument['key']
 
     def run(self):
         table = Table(self.dbpath)

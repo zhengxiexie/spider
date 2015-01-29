@@ -36,7 +36,7 @@ class Table():
             self.connector.commit()
             logging.info("Insert one row")
         except Exception, e:
-            logging.error(e)
+            logging.warning(e)
 
     def query_page(self):
         """查询数据库数据条数"""
@@ -44,5 +44,6 @@ class Table():
             self.cursor.execute("SELECT count(*) FROM page")
             res = self.cursor.fetchone()
             logging.info("Total count [%s]", res[0])
+            print "\nTotal count %s in table" % res[0]
         except Exception, e:
-            logging.error(e)
+            logging.warning(e)

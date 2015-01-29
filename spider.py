@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+import sys
+reload(sys)
+sys.setdefaultencoding('UTF8')
 from threading import Lock
 from thread_module import *
 from url_queue import *
@@ -10,7 +13,7 @@ def main():
 
     argument = get_opt()  # 解析命令行参数
     if not argument:
-        return
+        sys.exit(0)
 
     sheet_lock = Lock()  # 互斥锁
     sheet_url = set([])  # 已经解析的名单, 防止重复解析
@@ -47,9 +50,9 @@ def main():
     threads = []
 
     # 消费者线程
+    print 'Start %s consume threads' % int(argument['thread'])
     for i in range(int(argument['thread'])):
-        t = ParseUrlThread(url_queue, argument['dbfile'],
-                           int(argument['deep']), argument['key'])
+        t = ParseUrlThread(url_queue, argument)
         threads.append(t)
         t.start()
 

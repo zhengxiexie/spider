@@ -78,6 +78,7 @@ def get_opt():
         for o, a in opts:
             if o == "--help":
                 detail_usage()
+                return None
             elif a:
                 argument[argu_map[o]] = a
         return argument
