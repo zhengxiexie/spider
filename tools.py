@@ -20,13 +20,13 @@ def get_data(url):
     return html
 
 
-def parse(table, url, key):
-    """解析当前页面的所有url, 如果符合key的页面，则入库"""
+def parse(url, key, data_queue):
+    """解析当前页面的所有url, 如果符合key的页面，则插入数据队列"""
     url_list = []
     data = get_data(url)
     logging.debug(data)
     if key in data:
-        table.insert_page(data)
+        data_queue.put(data)
     res_iter = re.finditer(r'href="(http.*?)"', data, re.S)
     for i in res_iter:
         url = i.group(1)

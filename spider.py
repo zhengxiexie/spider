@@ -43,8 +43,11 @@ def main():
     count_before = table.query_page()  # 初始条数
     time_before = datetime.datetime.now()  # 初始时间
 
-    # 生成消息队列
+    # 消息队列
     url_queue = UrlQueue(sheet_lock, sheet_url)
+
+    # 入库的数据队列
+    data_queue = Queue()
 
     # 将第一个url入队列
     item = Item(argument['url'], 0)
@@ -57,17 +60,22 @@ def main():
         (int(argument['thread']), int(argument['deep']), argument['key'])
 
     for i in range(int(argument['thread'])):
-        t = ParseUrlThread(url_queue, argument)
+        t = ParseUrlThread(url_queue, data_queue, argument)
         threads.append(t)
         t.start()
 
     # 打印线程
     p = ProgressThread(url_queue)
-    threads.append(p)
     p.start()
+
+    # 入库线程
+    d = DBThread(data_queue, argument['dbfile'])
+    d.start()
 
     for t in threads:
         t.join()
+
+    p.stop(); d.stop(); p.join(); d.join();
 
     count_after = table.query_page()  # 最终条数
     time_after = datetime.datetime.now()  # 结束时间
