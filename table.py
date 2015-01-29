@@ -44,6 +44,7 @@ class Table():
             self.cursor.execute("SELECT count(*) FROM page")
             res = self.cursor.fetchone()
             logging.info("Total count [%s]", res[0])
-            print "\nTotal count %s in table" % res[0]
+            return res[0]
         except Exception, e:
             logging.warning(e)
+            return 0

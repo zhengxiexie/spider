@@ -42,9 +42,9 @@ def usage():
 def detail_usage():
     """详细的帮助"""
     print("-u      : the start url you crawl, default:http://www.baidu.com")
-    print("-d      : the depth you crawl, default:2")
+    print("-d      : the depth you crawl, default:1")
     print("-f      : logfile path, default:./log")
-    print("-l      : loglevel, default:2, 1-CRITICAL 2-ERROR 3-WARNING 4-INFO 5-DEBUG")
+    print("-l      : loglevel, default:4, 1-CRITICAL 2-ERROR 3-WARNING 4-INFO 5-DEBUG")
     print("--thread: how many threads you use, default:3")
     print("--dbfile: sqlite file path, default:./sqlite")
     print("--key   : the key word you want to search, default:html")
@@ -65,9 +65,9 @@ def get_opt():
 
     argument = {
          "url": "http://www.baidu.com",
-         "deep": "2",
+         "deep": "1",
          "logfile": "./log",
-         "loglevel": "2",
+         "loglevel": "4",
          "thread": "3",
          "dbfile": "./sqlite",
          "key": "html"

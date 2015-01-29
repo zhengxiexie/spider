@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 import sys
 reload(sys)
 sys.setdefaultencoding('UTF8')
@@ -39,6 +40,8 @@ def main():
     # 建表
     table = Table(argument['dbfile'])
     table.create_page()
+    count_before = table.query_page()  # 初始条数
+    time_before = datetime.datetime.now()  # 初始时间
 
     # 生成消息队列
     url_queue = UrlQueue(sheet_lock, sheet_url)
@@ -50,7 +53,9 @@ def main():
     threads = []
 
     # 消费者线程
-    print 'Start %s consume threads' % int(argument['thread'])
+    print 'You start %s consume threads, specify %s depth, key word is %s.' %\
+        (int(argument['thread']), int(argument['deep']), argument['key'])
+
     for i in range(int(argument['thread'])):
         t = ParseUrlThread(url_queue, argument)
         threads.append(t)
@@ -64,7 +69,10 @@ def main():
     for t in threads:
         t.join()
 
-    table.query_page()
+    count_after = table.query_page()  # 最终条数
+    time_after = datetime.datetime.now()  # 结束时间
+    print "\nTotal insert count %s this time, spent %s seconds." %\
+        ((count_after-count_before), (time_after-time_before).seconds)
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ class ParseUrlThread(Thread):
             logging.debug(self.key)
             url_list = parse(table, item.url, self.key)
             for url in url_list:
-                if item.deep > self.deep:  # 如果url深度超过某值，则不入队列
+                if item.deep >= self.deep:  # 如果url深度等于大于自定义深度，则不入队列
                     continue
                 item_new = Item(url, item.deep + 1)
                 self.url_queue.push(item_new)
